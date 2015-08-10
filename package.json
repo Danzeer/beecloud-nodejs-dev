@@ -1,6 +1,6 @@
 {
   "name": "beecloud-node-dev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BeeCloud Restful API with node.js",
   "main": "sdk/beecloud.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "author": "BeeCloud",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "q": "^1.4.1"
   }
 }
