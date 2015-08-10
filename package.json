@@ -1,5 +1,5 @@
 {
-  "name": "beecloud-node",
+  "name": "beecloud-node-dev",
   "version": "1.0.0",
   "description": "BeeCloud Restful API with node.js",
   "main": "sdk/beecloud.js",
