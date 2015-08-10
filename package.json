@@ -1,0 +1,14 @@
+{
+  "name": "beecloud-node",
+  "version": "1.0.0",
+  "description": "BeeCloud Restful API with node.js",
+  "main": "sdk/beecloud.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BeeCloud",
+  "license": "MIT",
+  "devDependencies": {
+    "q": "^1.4.1"
+  }
+}
