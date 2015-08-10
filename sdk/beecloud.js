@@ -3,6 +3,8 @@
  */
 
 var https = require("https");
+//var https = require("http");
+var port = 443;
 var Q = require("q");
 
 var hosts = ["apibj.beecloud.cn",
@@ -15,7 +17,7 @@ var BCErrMsg = {
 }
 
 var postFactory = function(path, paramCheck) {
-    return function(params) {
+    return function(params, timeout) {
         if (typeof(paramCheck) == "function") {
             //will throw error
             paramCheck(params);
@@ -23,37 +25,40 @@ var postFactory = function(path, paramCheck) {
 
         var seed = Math.floor(Math.random()*hosts.length);
         var deferred = Q.defer();
-
         var postData = JSON.stringify(params);
         var options = {
             hostname: hosts[seed],
-            port: 443,
+            port: port,
             path: path,
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': postData.length
-            }
+                'content-type': 'application/json;charset=utf-8',
+                'content-length' : Buffer.byteLength(postData, 'utf8')
+            },
+
         };
 
-
+        var timer = setTimeout(function(){
+            deferred.reject("request time out");
+        }, !timeout ? 30000 : timeout);
         var req = https.request(options, function(res) {
             res.on('data', function(data) {
+                clearTimeout(timer);
                 deferred.resolve(data);
             });
         });
         req.on('error', function(e) {
+            clearTimeout(timer);
             deferred.reject(e);
         });
-        req.write(postData);
-        req.end();
+        req.end(postData);
 
         return deferred.promise;
     };
 };
 
 var getFactory = function(path, paramCheck) {
-    return function(params) {
+    return function(params, timeout) {
         if (typeof(paramCheck) == "function") {
             //will throw error
             paramCheck(params);
@@ -65,17 +70,23 @@ var getFactory = function(path, paramCheck) {
         var getData = JSON.stringify(params);
         var options = {
             hostname: hosts[seed],
-            port: 443,
+            port: port,
             path: path + "?para=" + encodeURIComponent(getData),
             method: 'GET'
         };
 
+        var timer = setTimeout(function(){
+            deferred.reject("request time out");
+        }, !timeout ? 30000 : timeout);
+
         var req = https.request(options, function(res) {
             res.on('data', function(data) {
+                clearTimeout(timer);
                 deferred.resolve(data);
             });
         });
         req.on('error', function(e) {
+            clearTimeout(timer);
             deferred.reject(e);
         });
         req.end();
@@ -93,7 +104,7 @@ var commParamCheck = function(data) {
         throw new Error(BCErrMsg.NEED_PARAM + "timestamp");
     }
 
-    if (!isset($data["app_sign"])) {
+    if (!data["app_sign"]) {
         throw new Error(BCErrMsg.NEED_PARAM + "app_sign");
     }
 }
